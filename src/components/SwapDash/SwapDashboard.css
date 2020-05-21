@@ -1,7 +1,6 @@
 #form-div {
     border: none;
     text-align: center;
-    /* background-color: #404448; */
     background-color: #fff;
     padding:12px 24px;
     margin: 0;
@@ -11,7 +10,6 @@
     margin:0px 20px;
     font-size: 20px;
     font-weight:bolder;
-    /* color:#fff; */
 }
 
 #form-div input {
@@ -29,14 +27,22 @@
     margin-left:40px;
     width:120px;
     font-size:20px;
-    vertical-align: center;
+}
+
+.error-div {
+    color:red;
+    padding:12px 0;
+    text-align:center;
+    font-weight:bolder;
+    font-size:16px;
+    background-color: #fff;
+    background-color: inherit;
 }
 
 #select-tokens {
     width:100%;
     /* background-color: #404448; */
-    background-color: #fff;
-    /* color:#fff; */
+    /* background-color: #fff; */
     text-align: center;
     padding:12px 0px 0px 0px; 
     font-weight: bolder;
@@ -46,9 +52,8 @@
 
 #supported-tokens {
     width:100%;
-    /* color:#fff; */
     /* background-color: #404448; */
-    background-color: #fff;
+    /* background-color: #fff; */
     margin:0px 30px 0px 0px;
     text-decoration:none;
     display: flex;
@@ -64,7 +69,8 @@
     margin:0px 10px;
     padding:4px 16px;
     border:solid 2px #6A5ACD;
-    background-color: #F6F9FC;
+    /* background-color: #F6F9FC; */
+    /* background-color:#fff; */
     border-radius:10%;
     display:flex;
     align-items: center;
@@ -74,4 +80,88 @@
 .token-img {
     width:24px;
     margin-right: 5px;
+}
+
+
+#token-table {
+    width:80%;
+    margin:24px auto 24px auto;
+    border:none;
+    font-size:16px;
+    text-align: center;
+}
+
+.token-table-row {
+    /* background-color: #F6F9FC; */
+    background-color: #fff;
+    line-height: 40px;
+    height:40px;
+    
+}
+
+#token-table-header {
+    background-color:#404448;
+    height:40px;
+    color:#fff;
+    font-weight: bolder;
+}
+
+.token-cell {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width:100px;
+}
+
+
+.range-cell input {
+    height: 40px;
+}
+
+.number-cell input {
+    width:200px;
+    height:20px;
+    text-align: center;
+    border-radius: 5px;
+    border:'100px solid #404448';
+    outline: none;
+    color:#fff;
+    background-color: #404448;
+}
+
+
+/* Range slider copied */
+input[type="range"] {
+    -webkit-appearance: none;
+}
+   
+input[type="range"]:focus {
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    background: #1AAB9A;
+    height: 5px;
+}
+   
+input[type="range"]::-moz-range-track {
+    background:#1AAB9A;
+    height: 5px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 15px;
+    width: 15px;
+    background:#1A53F0;
+    margin-top: -5px;
+    border-radius: 50%;
+}
+   
+input[type="range"]::-moz-range-thumb {
+    height: 15px;
+    width: 15px;
+    background: #1A53F0;
+    margin-top: -5px;
+    border-radius: 50%;
 }

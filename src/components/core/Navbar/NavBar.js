@@ -8,16 +8,15 @@ import transactionIcon from '../../../icons/transaction.svg'
 
 Modal.setAppElement('#root');
 
-function NavBar({setWeb3, setAddress, setBalance, setIsWalletConnected}) {
+function NavBar({isWalletConnected, setIsWalletConnected}) {
 
-   const [showModal, setShowModel] = useState(false); 
+   const [showModal, setShowModal] = useState(false); 
    
    
     const connectWallet = () => {
-        setShowModel(false);
-        setIsWalletConnected(true); 
+        setShowModal(false);
+        setIsWalletConnected(true);
     }
-    
 
    const modalStyles = {
         content: {
@@ -41,15 +40,19 @@ function NavBar({setWeb3, setAddress, setBalance, setIsWalletConnected}) {
                         
                             <Link className="nav-link" to="/transactions">
                                 <img src={transactionIcon} alt="transactionIcon" />
-                                <span>Transactions</span>
+                                <span>Transact</span>
                                 
                             </Link>
-                        <button onClick={() => setShowModel(true)}> Connect Wallet</button>
+                            {isWalletConnected ? 
+                                <button>Wallet Connected</button> :
+                                <button onClick={() => setShowModal(true)}>Connect Wallet</button>
+                            }
+                            
                     </nav>
                 </header>
                 <Modal 
                     isOpen={showModal}
-                    onRequestClose={() => setShowModel(false)}
+                    onRequestClose={() => setShowModal(false)}
                     style={modalStyles}
                 >
                     <h1 id="modal-title">Connect Ethereum Wallet</h1>
@@ -59,10 +62,8 @@ function NavBar({setWeb3, setAddress, setBalance, setIsWalletConnected}) {
                             <h3>Metamask</h3>
                             Self custodial browser extension based wallet
                         </div>
-                        <button onClick={connectWallet}>Connect</button>
-                        
-                    </div>
-                        
+                            <button onClick={connectWallet}>Connect Wallet</button>
+                    </div>                 
                 </Modal>
            </Fragment>;
 }
