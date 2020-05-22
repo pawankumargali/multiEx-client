@@ -1,6 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import NavBar from '../core/Navbar/NavBar';
 import UserInfo from '../core/UserInfo/UserInfo';
+import Footer from '../core/Footer/Footer';
 import { userWallet } from '../../contractInterfaces/userWallet';
 import './TransactionDashboard.css';
 import compoundIcon from '../../icons/pools/compound.png';
@@ -13,6 +14,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Switch from '@material-ui/core/Switch';
+import {getDepositHashCompoundAave, getDepositAndBorrowCompoundHash, getDepositAndStreamAaveHash, getUniswapSwapHash} from '../../contractInterfaces/functionHashes';
 
 function TransactionDashboard({web3, address, balance, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, personalWalletAddress, setPersonalWalletAddress}) {
     
@@ -33,8 +35,11 @@ function TransactionDashboard({web3, address, balance, isWalletConnected, setIsW
     });
     const [lendAmts, setLendAmts] = useState({'compound':0, 'aave':0, 'uniswap':0});
     const [borrowAmts, setBorrowAmts] = useState({'compound':0, 'aave':0, 'uniswap':0});
-    const poolAddresses = {'compound':'0xd55E193F82Bd020FF69A5888ABe2848bF4970bc4' ,'aave':'0x71635A09C3B1Ae1441da3476E1Fc3E94f813C4F9', 'uniswap':'0xF5A7aFC6680806f02e9e17e9BD57211967d3c9b2'};
+    const poolAddresses = {'compound':'0x533dfFF0908196568d22806230f85de0ae576dCE' ,'aave':'0x8cFc0fcD556882bbD5e4f1257BB8dfF862219ad1', 'uniswap':'0xCC2f880f977d96b7DE75aD64Fc25696cC5b549d0'};
+    const [savedTransactions, setSavedTransactions]=useState(0);
     const [lendError, setLendError]=useState(false); 
+    const [borrowError, setBorrowError] = useState(false);
+    const [walletError, setWalletError] = useState(false);
 
     const updateSelectedPools = pool => {
         let currentPools=[...selectedPools];
@@ -81,52 +86,113 @@ function TransactionDashboard({web3, address, balance, isWalletConnected, setIsW
     }
 
     const initiateTransaction = async () => {
-        setLendError(false);
-        console.log(personalWalletAddress);
+        
         if(!personalWalletAddress) 
-            return setLendError("Error: Please connect to portal wallet to initiate any transaction");
+            return setWalletError("Error: Please connect to portal wallet to initiate any transaction");
         const wallet = new web3.eth.Contract(userWallet.contract.abi, personalWalletAddress);
-        const currentPools=[];
+        let transactionCount=0;
         let totalLendAmt=0;
+        // let totalBorrowAmt=Number(borrowAmts['compound']);
+        console.log('triggered 1');
+        // if(totalBorrowAmt>0) {
+        //     transactionCount++;
+
+        // }
         for(const pool in lendAmts) {
             if(lendAmts[pool]>0) {
                 totalLendAmt+=Number(lendAmts[pool]);
-                currentPools.push(pool);
+                transactionCount++;
             }
         }
+        console.log('triggered 2');
+
+        setSavedTransactions(transactionCount-1);
+        console.log(isPoolTransactSelected);
         console.log(totalLendAmt);
+        // console.log(totalBorrowAmt);
         console.log(balance);
         if(totalLendAmt>Number(balance)) 
+        {
+            console.log('Trig 11');
             return setLendError("Error : Lend Amount greater than wallet balance");
-        if(totalLendAmt===0)
+        }
+            
+        if(totalLendAmt<=0) {
+            console.log('Trig 22');
             return setLendError("Error: Lend amount cannot be zero");
+        }
+        // if(totalBorrowAmt<=0) {
+        //     console.log('Trig33');
+        //     return setBorrowError("Error: Borrow amount cannot be zero");
+        // }
+            
+        console.log('triggered 3');
+
         const poolAddressArray=[];
         const depositHashArray=[];
-        for(const pool of currentPools) {
-                poolAddressArray.push(poolAddresses[pool]);
-                const depositHash=_getFunctionHash('deposit',Number(lendAmts[pool])*Math.pow(10,18));
-                depositHashArray.push(depositHash);
+
+        // COMPOUND LEND AND BORROW
+        if(isPoolTransactSelected['compound'].lend===true && isPoolTransactSelected['compound'].borrow===true) {
+            if(poolAddressArray.indexOf(poolAddresses['compound'])===-1)     
+                poolAddressArray.push(poolAddresses['compound']);
+            const lendValue = Number(lendAmts['compound'])*Math.pow(10,18);
+            const borrowValue = Number(borrowAmts['compound'])*Math.pow(10,18);
+            const depositAndBorrowHash = getDepositAndBorrowCompoundHash(web3, lendValue, borrowValue);
+            depositHashArray.push(depositAndBorrowHash);
+            console.log('1: '+depositHashArray);
+
         }
+        console.log('triggered 4');
+
+
+        // COMPOUND ONLY LEND 
+        if(isPoolTransactSelected['compound'].lend===true  && isPoolTransactSelected['compound'].borrow===false) {
+            if(poolAddressArray.indexOf(poolAddresses['compound'])===-1) 
+                poolAddressArray.push(poolAddresses['compound']);
+            const lendValue = Number(lendAmts['compound'])*Math.pow(10,18);
+            const depositHash = getDepositHashCompoundAave(web3, lendValue);
+            depositHashArray.push(depositHash);
+            // console.log('2: '+depositHashArray);
+        }
+
+        // AAVE LEND AND STREAM
+        if(isPoolTransactSelected['aave'].lend===true && isPoolTransactSelected['aave'].borrow===true) {
+            if(poolAddressArray.indexOf(poolAddresses['aave'])===-1)
+                poolAddressArray.push(poolAddresses['aave']);
+            const lendValue = Number(lendAmts['aave'])*Math.pow(10,18);
+            console.log(lendValue);
+            const streamAddress= borrowAmts['aave'];
+            console.log(streamAddress);
+            const depositAndStreamHash = getDepositAndStreamAaveHash(web3, lendValue, streamAddress);
+            console.log(depositAndStreamHash);
+            depositHashArray.push(depositAndStreamHash);
+        }
+
+        // AAVE ONLY LEND
+        if(isPoolTransactSelected['aave'].lend===true && isPoolTransactSelected['aave'].borrow===false) {
+            if(poolAddressArray.indexOf(poolAddresses['aave'])===-1) 
+                poolAddressArray.push(poolAddresses['aave']);
+            const lendValue = Number(lendAmts['aave'])*Math.pow(10,18);
+            const depositHash = getDepositHashCompoundAave(web3, lendValue);
+            depositHashArray.push(depositHash);
+            // console.log('3: '+depositHashArray);
+
+        }
+
+        if(isPoolTransactSelected['uniswap'].lend===true && isPoolTransactSelected['uniswap'].borrow===true) {
+            if(poolAddressArray.indexOf(poolAddresses['uniswap'])===-1)
+                poolAddressArray.push(poolAddresses['uniswap']);
+            // '0xCC2f880f977d96b7DE75aD64Fc25696cC5b549d0'
+            const swapValue = Number(lendAmts['uniswap'])*Math.pow(10,18);
+            const toToken = borrowAmts['uniswap'];
+            const swapHash = getUniswapSwapHash(web3, swapValue, toToken);
+            depositHashArray.push(swapHash);
+        }
+        
         console.log(poolAddressArray);
         console.log(depositHashArray);
-        await wallet.methods.execute([...poolAddressArray,"0xF5A7aFC6680806f02e9e17e9BD57211967d3c9b2"], [...depositHashArray,"0xb18834aa0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000016345785d8a00000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000004f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa"]).send({ from: window.ethereum.selectedAddress, value: Number((totalLendAmt*Math.pow(10,18))+100000000000000000).toString() });
+        await wallet.methods.execute([...poolAddressArray], [...depositHashArray]).send({ from: window.ethereum.selectedAddress, value: Number((totalLendAmt*Math.pow(10,18))).toString() });
     }
-
-    const _getFunctionHash = (name,tokenValue) => {
-        const depositHash = web3.eth.abi.encodeFunctionCall({
-            "name":name,
-            "type":"function",
-            "inputs": [{
-                "type": "uint256",
-                "name": "msgValue"
-              }]
-        },[tokenValue.toString()]);
-        console.log(depositHash);
-        return depositHash;
-    }
-
-
-
 
     return <Fragment>
                 <NavBar isWalletConnected={isWalletConnected}
@@ -180,7 +246,7 @@ function TransactionDashboard({web3, address, balance, isWalletConnected, setIsW
                                                 label={<span style={{color:'#fff', fontSize:'20px' }}>Borrow</span>}
                                             />
                                             {isPoolTransactSelected[pool].borrow && 
-                                                <input type="number" min={0}
+                                                <input type="text"
                                                        className="lend-borrow-amt-input"
                                                        onChange={e => handleBorrowAmtChange(e,pool)}
                                                        value={borrowAmts[pool]}
@@ -204,7 +270,8 @@ function TransactionDashboard({web3, address, balance, isWalletConnected, setIsW
                         >
                             Transact
                         </button>
-                    </div>
+                </div>
+                <Footer />
            </Fragment>
 }
 

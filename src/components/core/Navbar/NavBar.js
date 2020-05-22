@@ -4,6 +4,7 @@ import {initWeb3, initContract} from '../../../contractInterfaces/init';
 import { registry, initRegistry, checkRegistry } from '../../../contractInterfaces/registry';
 import Modal from 'react-modal';
 import './NavBar.css';
+import brandLogo from '../../../icons/logo.png';
 import metamaskIcon from '../../../icons/metamask.svg'
 import swapIcon from '../../../icons/swap.svg'
 import transactionIcon from '../../../icons/transaction.svg'
@@ -63,14 +64,16 @@ function NavBar({setIsWalletConnected, isRegistered, setIsRegistered, setPersona
 
     return <Fragment>
                 <header>
-                    <Link className="nav-link" id="logo" to="/">Multiex</Link>
+                    <Link className="nav-link" id="logo" to="/">
+                        <img src={brandLogo} alt="parcel-logo"/>
+                    </Link>
                     <nav>
                             <Link className="nav-link" to="/swap"> 
                                 <img src={swapIcon} alt="swap-icon"/>
                                 <span>Swap</span>
                             </Link>
                         
-                            <Link className="nav-link" to="/transactions">
+                            <Link className="nav-link" to="/transact">
                                 <img src={transactionIcon} alt="transactionIcon" />
                                 <span>Transact</span>
                                 
@@ -112,7 +115,7 @@ function NavBar({setIsWalletConnected, isRegistered, setIsRegistered, setPersona
                 >
                     <h1 id="modal-title">Create Personal Wallet</h1>
                     <div id="modal-body">
-                        <img src={metamaskIcon} alt="metamask" />
+                        <img style={{width:'150px'}} src={brandLogo} alt="metamask" />
                         <div>
                             <h3>Parcel Wallet</h3>
                             Parcel protocol requires for you to create a personal wallet

@@ -1,7 +1,7 @@
 header {
     display:flex;
     padding: 8px 24px;
-    background-color: #404448;
+    background-color: #fff;
     box-shadow: 2px 2px #aaa;  
     justify-content: space-between;
     align-items: center; 
@@ -19,7 +19,7 @@ nav {
     display: flex;
     align-items: center;
     padding:12px 24px;
-    color:#fff;
+    color:#03265b;
     font-size: 18px;
     font-weight: bolder;
     cursor: pointer;
@@ -31,11 +31,15 @@ nav {
 }
      
 #logo {
-    font-size: 24px;
+    margin-left: 0;
+}
+
+#logo img {
+    width:150px;
 }
 
 button {
-    background-color:#6A5ACD;
+    background-color:#3fbda6;
     color:#fff;
     border-radius:5px;
     border:none;

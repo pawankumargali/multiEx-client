@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import NavBar from '../core/Navbar/NavBar';
 import UserInfo from '../core/UserInfo/UserInfo';
+import Footer from '../core/Footer/Footer';
 import './SwapDashboard.css';
 import daiIcon from '../../icons/tokens/DAI.svg';
 import batIcon from '../../icons/tokens/BAT.svg';
@@ -43,8 +44,7 @@ totalToAmounts => array: [totalPercentage, totalAmount] => used to check if outp
         'OMG':[0,0]  
     });
     const [totalToAmounts, setTotalToAmounts]=useState([0,0]);
-
-   
+    const [savedTransactions, setSavedTransactions]=useState(0);
 
     const updateSelectedTokens = token => {
         let currentTokens=[...selectedTokens];
@@ -111,6 +111,17 @@ totalToAmounts => array: [totalPercentage, totalAmount] => used to check if outp
             console.log('Bal:'+balance);
             console.log('SwapAmt:'+fromAmount);
             console.log('Swap Initiated');
+            const currentAmts = {};
+            let transactionCount=0;
+            for(const token in toAmounts) {
+                if(toAmounts[token][1]!==0)  {
+                    currentAmts[token]=toAmounts[token][1];
+                    transactionCount++;
+                }
+            }
+            console.log(currentAmts);
+            setSavedTransactions(transactionCount-1);
+            console.log(savedTransactions);
         }
         else {
             if(Number(fromAmount)>Number(balance)) 
@@ -190,7 +201,7 @@ totalToAmounts => array: [totalPercentage, totalAmount] => used to check if outp
                                         <td className="number-cell">
                                             <input type="number"
                                                    min={0} 
-                                                   value={toAmounts[token][1]===0 ? null:toAmounts[token][1]}
+                                                   value={toAmounts[token][1]===0 ? "":toAmounts[token][1]}
                                                    onChange={e => handleAmountSelect(e, token)}
                                             />
                                         </td>
@@ -224,6 +235,7 @@ totalToAmounts => array: [totalPercentage, totalAmount] => used to check if outp
                 {selectedTokens.length!==0 && <div style={{textAlign:'center', marginBottom:'50px'}}>
                     <button id="swap-btn" onClick={initiateSwap}>Swap</button>
                 </div>}
+                <Footer style={selectedTokens.length===0 ?{position:'fixed',bottom:'0'}:{}}/>
            </Fragment>
 }
 

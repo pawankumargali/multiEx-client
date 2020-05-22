@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import NavBar from '../core/Navbar/NavBar';
 import ServiceInfo from  '../ServiceInfo/ServiceInfo';
+import Footer from '../core/Footer/Footer';
 import './Home.css';
 // import { registry } from '../../contractInterfaces/registry';
 // import UserInfo from '../core/UserInfo/UserInfo';
@@ -22,27 +23,30 @@ function Home({web3, isWalletConnected, setIsWalletConnected, isRegistered, setI
                           balance={balance}
                 />} */}
                 <section id="landing">
-                    <div id="title">Conduct Multiple Transactions at Once. Save on Gas</div>
+                    <div id="title">Parcel multiple transactions into one. Save on Gas</div>
                     <div id="description">
-                        Select and swap multiple tokens with Ethereum in one transaction. Invest in and
+                        Select and swap multiple tokens with Ethereum. Invest in and
                         Borrow simultaneously from popular DeFi portals. All in one Transaction. Reduce
                         the number of transactions involved and save Eth on gas.
                     </div>
                 </section> 
                 <section id="steps-container"> 
                     <ServiceInfo 
-                        serviceIconUrl={"https://testurl.com"}
-                        serviceName={'Service 01'}
-                        serviceDesc={'This is description for Service 01'}
-                        bgColor='#91ac41'
+                        serviceIconName={'swap'}
+                        serviceName={'Swap Tokens'}
+                        serviceDesc={'Choose from list of supported tokens, select quantities and swap at once'}
+                        bgColor='#03265b'
+                        btnColor="#3fbda6"
                     />
                     <ServiceInfo 
-                        serviceIconUrl={"https://testurl.com"}
-                        serviceName={'Service 02'}
-                        serviceDesc={'This is description for Service 02'}
-                        bgColor='#e4b476'
+                        serviceIconName={'transact'}
+                        serviceName={'Lend/Borrow from DeFi portals'}
+                        serviceDesc={'Choose from list of DeFi portal, select lend or/and borrow transactions, enter quantities and transact at once'}
+                        bgColor='#3fbda6'
+                        btnColor="#03265b"
                     />
-                </section>   
+                </section> 
+                <Footer /> 
            </Fragment>
 }
 

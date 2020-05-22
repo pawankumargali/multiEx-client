@@ -4,17 +4,20 @@
     text-align:center;
 }
 
-.steps-icon i { font-size: 96px; }
+.steps-icon img { width:64px; }
 
 .steps-title {
     font-size:24px;
     font-weight:600;
     margin-top:24px;
     margin-bottom:24px;
+    color:#F6F9FC;
 }
 
 .steps-description {
     font-size: 14px;
     letter-spacing: 0.5px;
     line-height: 1.6;
+    color:#F6F9FC;
+    margin-bottom:24px;
 }
