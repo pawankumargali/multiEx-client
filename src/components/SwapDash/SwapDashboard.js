@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import Navbar from '../core/Navbar/NavBar';
+import NavBar from '../core/Navbar/NavBar';
 import UserInfo from '../core/UserInfo/UserInfo';
 import './SwapDashboard.css';
 import daiIcon from '../../icons/tokens/DAI.svg';
@@ -7,7 +7,8 @@ import batIcon from '../../icons/tokens/BAT.svg';
 import mkrIcon from '../../icons/tokens/MKR.svg';
 import omgIcon from '../../icons/tokens/OMG.svg';
 
-function SwapDashboard({web3, contract, address, balance, isWalletConnected, setIsWalletConnected}) {
+
+function SwapDashboard({web3, address, balance, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
 
     const tokenStyles = token => {
         if(!isSelected[token]) return null;
@@ -122,8 +123,14 @@ totalToAmounts => array: [totalPercentage, totalAmount] => used to check if outp
     }
 
     return <Fragment>
-                <Navbar isWalletConnected={isWalletConnected}
-                        setIsWalletConnected={setIsWalletConnected}         
+                <NavBar isWalletConnected={isWalletConnected}
+                        setIsWalletConnected={setIsWalletConnected} 
+                        isRegistered={isRegistered}
+                        setIsRegistered={setIsRegistered}
+                        web3={web3}
+                        registryContract={registryContract}
+                        setRegistryContract={setRegistryContract}
+                        setPersonalWalletAddress={setPersonalWalletAddress}
                 />
                 <UserInfo address={address} balance={balance} />
                 <form id="form-div">

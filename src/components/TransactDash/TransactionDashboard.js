@@ -1,6 +1,7 @@
 import React, { useState, Fragment } from 'react';
-import Navbar from '../core/Navbar/NavBar';
+import NavBar from '../core/Navbar/NavBar';
 import UserInfo from '../core/UserInfo/UserInfo';
+import { userWallet } from '../../contractInterfaces/userWallet';
 import './TransactionDashboard.css';
 import compoundIcon from '../../icons/pools/compound.png';
 import aaveIcon from '../../icons/pools/aave.png';
@@ -13,8 +14,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Switch from '@material-ui/core/Switch';
 
-function TransactionDashboard({web3, contract, address, balance, isWalletConnected, setIsWalletConnected}) {
-    const poolStyles = pool => {
+function TransactionDashboard({web3, address, balance, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, personalWalletAddress, setPersonalWalletAddress}) {
+    
+  const poolStyles = pool => {
         if(!isSelected[pool]) return null;
         return {backgroundColor:'#6A5ACD'};
     }
@@ -31,6 +33,8 @@ function TransactionDashboard({web3, contract, address, balance, isWalletConnect
     });
     const [lendAmts, setLendAmts] = useState({'compound':0, 'aave':0, 'uniswap':0});
     const [borrowAmts, setBorrowAmts] = useState({'compound':0, 'aave':0, 'uniswap':0});
+    const poolAddresses = {'compound':'0xd55E193F82Bd020FF69A5888ABe2848bF4970bc4' ,'aave':'0x71635A09C3B1Ae1441da3476E1Fc3E94f813C4F9', 'uniswap':'0xF5A7aFC6680806f02e9e17e9BD57211967d3c9b2'};
+    const [lendError, setLendError]=useState(false); 
 
     const updateSelectedPools = pool => {
         let currentPools=[...selectedPools];
@@ -77,39 +81,61 @@ function TransactionDashboard({web3, contract, address, balance, isWalletConnect
     }
 
     const initiateTransaction = async () => {
-        // const hash = web3.eth.abi.encodeFunctionCall({
-        
-        //         "constant": false,
-        //         "inputs": [
-        //             {
-        //                 "internalType": "address[]",
-        //                 "name": "path",
-        //                 "type": "address[]"
-        //             },
-        //             {
-        //                 "internalType": "uint256",
-        //                 "name": "amountInEth",
-        //                 "type": "uint256"
-        //             }
-        //         ],
-        //         "name": "swap",
-        //         "outputs": [],
-        //         "payable": true,
-        //         "stateMutability": "payable",
-        //         "type": "function"
-
-        // }, [["0xd0A1E359811322d97991E03f863a0C30C2cF029C","0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"], "100000000000000000"]);
-        // const hash = web3.eth.abi.encodeFunctionCall({
-        //     name: 'deposit',
-        //     type: 'function',
-        //     inputs: []
-        // }, []);
-        // console.log(hash);
+        setLendError(false);
+        console.log(personalWalletAddress);
+        if(!personalWalletAddress) 
+            return setLendError("Error: Please connect to portal wallet to initiate any transaction");
+        const wallet = new web3.eth.Contract(userWallet.contract.abi, personalWalletAddress);
+        const currentPools=[];
+        let totalLendAmt=0;
+        for(const pool in lendAmts) {
+            if(lendAmts[pool]>0) {
+                totalLendAmt+=Number(lendAmts[pool]);
+                currentPools.push(pool);
+            }
+        }
+        console.log(totalLendAmt);
+        console.log(balance);
+        if(totalLendAmt>Number(balance)) 
+            return setLendError("Error : Lend Amount greater than wallet balance");
+        if(totalLendAmt===0)
+            return setLendError("Error: Lend amount cannot be zero");
+        const poolAddressArray=[];
+        const depositHashArray=[];
+        for(const pool of currentPools) {
+                poolAddressArray.push(poolAddresses[pool]);
+                const depositHash=_getFunctionHash('deposit',Number(lendAmts[pool])*Math.pow(10,18));
+                depositHashArray.push(depositHash);
+        }
+        console.log(poolAddressArray);
+        console.log(depositHashArray);
+        await wallet.methods.execute([...poolAddressArray,"0xF5A7aFC6680806f02e9e17e9BD57211967d3c9b2"], [...depositHashArray,"0xb18834aa0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000016345785d8a00000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000004f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa"]).send({ from: window.ethereum.selectedAddress, value: Number((totalLendAmt*Math.pow(10,18))+100000000000000000).toString() });
     }
 
+    const _getFunctionHash = (name,tokenValue) => {
+        const depositHash = web3.eth.abi.encodeFunctionCall({
+            "name":name,
+            "type":"function",
+            "inputs": [{
+                "type": "uint256",
+                "name": "msgValue"
+              }]
+        },[tokenValue.toString()]);
+        console.log(depositHash);
+        return depositHash;
+    }
+
+
+
+
     return <Fragment>
-                <Navbar isWalletConnected={isWalletConnected}
-                        setIsWalletConnected={setIsWalletConnected}         
+                <NavBar isWalletConnected={isWalletConnected}
+                        setIsWalletConnected={setIsWalletConnected}
+                        isRegistered={isRegistered}
+                        setIsRegistered={setIsRegistered}
+                        registryContract={registryContract}
+                        setRegistryContract={setRegistryContract}
+                        setPersonalWalletAddress={setPersonalWalletAddress}                         
                 />
                 <UserInfo address={address} balance={balance} />
                 <div id="select-pools">Select Pools to Deposit/Borrow from</div>
@@ -171,6 +197,7 @@ function TransactionDashboard({web3, contract, address, balance, isWalletConnect
                         
                     })}
                 </div>
+                <div style={{color:'red', fontSize:'20px'}}>{lendError}</div>
                 <div style={{textAlign:'center', margin:'50px 0 100px 0'}}>
                         <button className="deposit-btn"
                                 onClick={initiateTransaction}

@@ -2,13 +2,22 @@ import React, { Fragment } from 'react';
 import NavBar from '../core/Navbar/NavBar';
 import ServiceInfo from  '../ServiceInfo/ServiceInfo';
 import './Home.css';
+// import { registry } from '../../contractInterfaces/registry';
 // import UserInfo from '../core/UserInfo/UserInfo';
 
-function Home({isWalletConnected, setIsWalletConnected}) {
+function Home({web3, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
 
     return <Fragment>
                 <NavBar isWalletConnected={isWalletConnected}
-                        setIsWalletConnected={setIsWalletConnected} />
+                        setIsWalletConnected={setIsWalletConnected} 
+                        isRegistered={isRegistered}
+                        setIsRegistered={setIsRegistered}
+                        web3={web3}
+                        registryContract={registryContract}
+                        setRegistryContract={setRegistryContract}
+                        setPersonalWalletAddress={setPersonalWalletAddress}
+
+                />
                 {/* {address && <UserInfo address={address}
                           balance={balance}
                 />} */}
