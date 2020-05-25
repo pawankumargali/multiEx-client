@@ -14,7 +14,7 @@ import {getDepositHashCompoundAave, getDepositAndBorrowCompoundHash, getDepositA
 import PoolPercentageChart from '../PoolPercentageChart';
 import SavedTransactionsChart from '../SavedTransactionsChart';
 
-function TransactionDashboard({web3, tokenAddresses, address, setAddress, balances, setBalances, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract }) {
+function TransactionDashboard({web3, tokenAddresses, address, setAddress, balances, setBalances, setMetamaskAdd, setMetamaskBal, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract }) {
 
     const poolStyles = pool => {
         if(!isPoolSelected[pool]) return null;
@@ -244,7 +244,9 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
                         setRegistryContract={setRegistryContract}
                         setAddress={setAddress}
                         setBalances={setBalances}   
-                        tokenAddresses={tokenAddresses}                      
+                        tokenAddresses={tokenAddresses}
+                        setMetamaskAdd={setMetamaskAdd}
+                        setMetamaskBal={setMetamaskBal}                      
                 />
                 <UserInfo address={address} balances={balances} />
                 <div id="select-pools">Select Protocols to invest</div>

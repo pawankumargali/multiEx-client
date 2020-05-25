@@ -25,30 +25,23 @@ function App() {
   const [registryContract, setRegistryContract] = useState(null);
   const [uniSwapContract, setUniswapContract] = useState(null);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [metamaskAdd, setMetamaskAdd] = useState(false);
+  const [metamaskBal, setMetamaskBal] = useState(0);
 
-  // window.ethereum.on('accountsChanged', async () => {
-  //   try {
-  //     if(web3) {
-  //       const [add,bal] = await initUser(web3);
-  //       setAddress(add);
-  //       setBalance(web3.utils.fromWei(bal, 'ether'));
-  //       let personalWalletAdd = await checkRegistry(registryContract);
-  //       if(personalWalletAdd==="0x0000000000000000000000000000000000000000") {
-  //         setIsRegistered(false);
-  //         setPersonalWalletAddress(null);
-  //       }
-  //       else {
-  //         setIsRegistered(true);
-  //         setPersonalWalletAddress(personalWalletAdd);
-  //       }
-  //     }
-  //   }
-  //   catch(err) {
-  //     setIsWalletConnected(false);
-  //     setAddress("");
-  //     setBalance(0);
-  //   }
-  // });
+  window.ethereum.on('accountsChanged', async () => {
+    try {
+      if(web3) {
+        const [add,bal] = await initUser(web3);
+        setMetamaskAdd(add);
+        setMetamaskBal(web3.utils.fromWei(bal, 'ether'));
+      }
+    }
+    catch(err) {
+      setIsWalletConnected(false);
+      setMetamaskAdd("");
+      setMetamaskBal(0);
+    }
+  });
 
   const runInit = async () => {
     try {
@@ -80,7 +73,7 @@ function App() {
     if(window.ethereum.selectedAddress) setIsWalletConnected(true);
     if(isWalletConnected) runInit();
     if(address) setIsRegistered(true);
-  }, [isWalletConnected, isRegistered, registryContract, address, balances]);
+  }, [isWalletConnected, isRegistered, address]);
 
   return  <Router>
               <Switch>
@@ -95,6 +88,8 @@ function App() {
                                     setIsRegistered={setIsRegistered}
                                     registryContract={registryContract}
                                     setRegistryContract={setRegistryContract}
+                                    setMetamaskAdd={setMetamaskAdd}
+                                    setMetamaskBal={setMetamaskBal}
                   />}
                 />
                 <Route path='/parcel' exact 
@@ -110,6 +105,10 @@ function App() {
                                     setIsRegistered={setIsRegistered}
                                     registryContract={registryContract}
                                     setRegistryContract={setRegistryContract}
+                                    metamaskAdd={metamaskAdd}
+                                    metamaskBal={metamaskBal}
+                                    setMetamaskAdd={setMetamaskAdd}
+                                    setMetamaskBal={setMetamaskBal}
                                         
                   />}
                 />
@@ -126,6 +125,8 @@ function App() {
                                   setIsRegistered={setIsRegistered}
                                   registryContract={registryContract}
                                   setRegistryContract={setRegistryContract}
+                                  setMetamaskAdd={setMetamaskAdd}
+                                  setMetamaskBal={setMetamaskBal}
                                  
                   />}   
                 />

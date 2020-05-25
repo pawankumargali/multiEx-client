@@ -7,7 +7,7 @@ import './Home.css';
 // import { registry } from '../../contractInterfaces/registry';
 // import UserInfo from '../core/UserInfo/UserInfo';
 
-function Home({web3, tokenAddresses, setAddress, setBalances, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
+function Home({web3, tokenAddresses, setAddress, setBalances, setMetamaskAdd, setMetamaskBal, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
 
     return <Fragment>
                 <NavBar isWalletConnected={isWalletConnected}
@@ -21,6 +21,8 @@ function Home({web3, tokenAddresses, setAddress, setBalances, isWalletConnected,
                         setAddress={setAddress}
                         setBalances={setBalances}
                         tokenAddresses={tokenAddresses}
+                        setMetamaskAdd={setMetamaskAdd}
+                        setMetamaskBal={setMetamaskBal}
 
                 />
                 {/* {address && <UserInfo address={address}

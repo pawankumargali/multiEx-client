@@ -14,7 +14,7 @@ import SavedTransactionsChart from '../SavedTransactionsChart';
 import { getUniswapSwapHash, getMultisenderHash } from '../../contractInterfaces/functionHashes';
 
 
-function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, setBalances, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
+function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, setBalances, metamaskAdd, setMetamaskAdd, metamaskBal, setMetamaskBal, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
 
     const supportedTokens = ['ETH', 'DAI', 'MKR', 'USDC'];
     const tokenIcons = {'DAI':daiIcon, 'BAT':batIcon, 'MKR':mkrIcon, 'OMG':omgIcon};
@@ -29,39 +29,39 @@ function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, set
     const [outputAmt, setOutputAmt] = useState(0);
     const uniswapTokenAddresses = {'ETH':'0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE','DAI':'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa', 'USDC':'0x75B0622Cec14130172EaE9Cf166B92E5C112FaFF', 'MKR':'0xAaF64BFCC32d0F15873a02163e7E500671a4ffcD'};
     const multiTokenAddress='0xcb9C3BC7fc71F72E67b985ca7752291E1beaC3D6';
-    const [metaMaskAdd, setMetamaskAdd] = useState("");
-    const [metaMaskBal, setMetamaskBal] = useState(0);
+    // const [metaMaskAdd, setMetamaskAdd] = useState("");
+    // const [metaMaskBal, setMetamaskBal] = useState(0);
 
     const handleFromAmtChange = e => setFromAmount(e.target.value);
 
-    const getSwapSaved = () => {
-        let savedCount=0;
-        for(const obj in toAmountsArray) {
-            if(toAmountsArray[obj].ethAmt!==0)
-                savedCount++;
-        }
-        return savedCount;
-    }
+    // const getSwapSaved = () => {
+    //     let savedCount=0;
+    //     for(const obj in toAmountsArray) {
+    //         if(toAmountsArray[obj].ethAmt!==0)
+    //             savedCount++;
+    //     }
+    //     return savedCount;
+    // }
 
-    const getMetaMaskDetails = async () => {
-        const web3 = await initWeb3();
-        if(window.ethereum.selectedAddress) {
-            const add = window.ethereum.selectedAddress;
-            const bal = await web3.eth.getBalance(add)/Math.pow(10,18);
-            setMetamaskAdd(add);
-            setMetamaskBal(bal);
-            console.log(bal);
-        }
-    }
+    // const getMetaMaskDetails = async () => {
+    //     const web3 = await initWeb3();
+    //     // if(window.ethereum.selectedAddress) {
+    //         const add = window.ethereum.selectedAddress;
+    //         const bal = await web3.eth.getBalance(add)/Math.pow(10,18);
+    //         setMetamaskAdd(add);
+    //         setMetamaskBal(bal);
+    //         console.log(bal);
+    //     // }
+    // }
     
 
-    useEffect(() => { 
-        const savedCount = getSwapSaved();
-        console.log(savedCount);
-        setSwapSaved(savedCount);
-        getMetaMaskDetails();
-        
-    }, []);
+    // useEffect(() => { 
+    //     const savedCount = getSwapSaved();
+    //     console.log(savedCount);
+    //     setSwapSaved(savedCount);
+    //     // if(window.ethereum.selectedAddress)
+    //     //     getMetaMaskDetails();
+    // }, []);
 
 
     const _getTotalOutputAmt = (outputAmtArray) => {
@@ -135,7 +135,7 @@ function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, set
     const initiateSend = async () => { 
         console.log(address);
        const metamaskAcc = window.ethereum.selectedAddress;
-       const web3 = await initWeb3();
+        const web3 = await initWeb3();
        const weiBalance = await web3.eth.getBalance(metamaskAcc);
        const accBalance = web3.utils.fromWei(weiBalance,'ether');
        if(Number(fromAmount) > accBalance) {
@@ -207,7 +207,9 @@ function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, set
                         setRegistryContract={setRegistryContract}
                         setAddress={setAddress}
                         setBalances={setBalances}   
-                        tokenAddresses={tokenAddresses}                      
+                        tokenAddresses={tokenAddresses}
+                        setMetamaskAdd={setMetamaskAdd}
+                        setMetamaskBal={setMetamaskBal}                 
                 />
                 {/* <div id="chart-div">
                     <SavedTransactionsChart savedTransactionCount={swapSaved} maxCount={20}/>
@@ -215,8 +217,8 @@ function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, set
                 <div id="info-container-div">
                     <div className="info-item-div">
                     <h3 className="title">Wallet</h3>
-                    <p class="content">{metaMaskAdd ? metaMaskAdd : <span style={{color:'red'}}>Wallet not connected</span>}</p>
-                    <p class="content">{metaMaskBal ? Math.round(metaMaskBal*10000)/10000+' ETH' : ""}</p>
+                    <p class="content">{metamaskAdd ? metamaskAdd : <span style={{color:'red'}}>Wallet not connected</span>}</p>
+                    <p class="content">{metamaskBal ? Math.round(metamaskBal*10000)/10000+' ETH' : ""}</p>
                 </div>
                     {/* <div className="info-item-div"><h3 className="title">Transactions Saved</h3>
                         <p style={{color:'#000'}}>{swapSaved-1===-1 ? 0 : swapSaved-1}</p>
@@ -241,7 +243,7 @@ function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, set
                 <table id="token-table-parcel">
                     <thead>
                         <tr className="token-table-header">
-                            <th style={{backgroundColor:'#F6F9FC'}}></th>
+                            <th style={{backgroundColor:'#F0F5F9'}}></th>
                             <th>ETH / Token</th>
                             <th>Send Amount in ETH</th>
                             <th>Tokens Sent</th>
@@ -281,7 +283,7 @@ function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, set
                             </tr>
                         )}
                         <tr className="token-table-header">
-                        <td style={{backgroundColor:'#F6F9FC'}}>
+                        <td style={{backgroundColor:'#F0F5F9'}}>
                             <button id="add-row-btn-parcel" onClick={addTransactionRow}>+</button>
                         </td>
                             <td>Total Amount</td>

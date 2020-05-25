@@ -12,7 +12,7 @@ import transactionIcon from '../../../icons/transaction.svg'
 
 Modal.setAppElement('#root');
 
-function NavBar({tokenAddresses, setAddress, setBalances, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract}) {
+function NavBar({tokenAddresses, setAddress, setBalances, setMetamaskAdd, setMetamaskBal, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract}) {
    const [showMetaMaskModal, setShowMetaMaskModal] = useState(false); 
    let [showPersonalWalletConnectModal, setShowPersonalWalletConnectModal] = useState(false);
 
@@ -21,6 +21,10 @@ function NavBar({tokenAddresses, setAddress, setBalances, setIsWalletConnected, 
         setIsWalletConnected(true);
         const web3Obj = await initWeb3();
         setTimeout(async () => {
+            const add = window.ethereum.selectedAddress;
+            const bal = await web3Obj.eth.getBalance(add)/Math.pow(10,18);
+            setMetamaskAdd(add);
+            setMetamaskBal(bal);
             const registryContractObj = initContract(web3Obj, registry.contract.abi, registry.contract.address);
             setRegistryContract(registryContractObj);
             const personalWalletAdd = await checkRegistry(registryContractObj);
@@ -45,7 +49,6 @@ function NavBar({tokenAddresses, setAddress, setBalances, setIsWalletConnected, 
                 setIsRegistered(true);
                 console.log('PWA: '+personalWalletAdd);
                 console.log(currentBalances);
-
             }   
         },1000);
     }
