@@ -5,6 +5,7 @@ import transactionIcon from '../../icons/transaction.svg'
 import compoundIcon from '../../icons/pools/compound.png';
 import aaveIcon from '../../icons/pools/aave.png';
 import uniswapIcon from '../../icons/pools/uniswap.png';
+import parcelIcon from '../../icons/logo.png';
 
 function ServiceInfo({serviceIconName, serviceName, serviceDesc, bgColor}) {
     const imageSource = serviceIconName==='uniswap' ? swapIcon : transactionIcon;
@@ -15,6 +16,8 @@ function ServiceInfo({serviceIconName, serviceName, serviceDesc, bgColor}) {
         stepIcon=compoundIcon;
     else if(serviceIconName==='aave')
         stepIcon=aaveIcon;
+    else if(serviceIconName==='parcel')
+        stepIcon=parcelIcon;
 
     return  <div className="steps-item" style={{backgroundColor:bgColor}}>
                 <div className="steps-icon"><img src={stepIcon} alt={serviceIconName} /> </div>

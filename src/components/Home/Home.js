@@ -42,6 +42,12 @@ function Home({web3, tokenAddresses, setAddress, setBalances, isWalletConnected,
                 
                 <section id="steps-container"> 
                     <ServiceInfo 
+                            serviceIconName={'parcel'}
+                            serviceName={'P2P transfers'}
+                            serviceDesc={'Make multiple Peer to peer transfers in one transaction'}
+                            bgColor='#FF3D67'
+                    />
+                    <ServiceInfo 
                         serviceIconName={'compound'}
                         serviceName={'Lend/Borrow'}
                         serviceDesc={'Lend ETH and Borrow DAI.'}
@@ -57,7 +63,7 @@ function Home({web3, tokenAddresses, setAddress, setBalances, isWalletConnected,
                         serviceIconName={'uniswap'}
                         serviceName={'Swap Tokens'}
                         serviceDesc={'Choose from list of supported tokens, select quantities and swap ETH.'}
-                        bgColor='#03265b'
+                        bgColor='#BBA8FF'
                     />
                 </section> 
                 <Footer /> 
