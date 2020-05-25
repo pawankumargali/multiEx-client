@@ -192,6 +192,7 @@ function SwapDashboard({web3, tokenAddresses, address, setAddress, balances, set
             if (receipt.status) {
               alert("Transaction processed successfully")
             } else {
+                alert("Transaction failed to process");
             }
             console.log(receipt)
         })

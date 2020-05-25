@@ -31,7 +31,7 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
     const [aaveTransactSelected, setAaveTransactSelected] = useState({lend:false, stream:false});
     const [aaveInput, setAaveInput] = useState({lend:0, stream:""}); 
     const [uniswapTransactSelected, setUniswapTransactSelected]=useState({'DAI':false, 'BAT':false, 'MKR':false, 'OMG':false});
-    const [uniswapInput, setUniswapInput] = useState({from:0, to:{'DAI':0, 'BAT':0, 'MKR':0, 'OMG':0}});
+    const [uniswapInput, setUniswapInput] = useState({from:0, to:{'DAI':0, 'BAT':0, 'MKR':0, 'OMG':0},});
     const uniswapTokenAddresses = {'DAI':'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa', 'USDC':'0x75B0622Cec14130172EaE9Cf166B92E5C112FaFF', 'MKR':'0xAaF64BFCC32d0F15873a02163e7E500671a4ffcD'};
     const [savedTransactionCount, setSavedTransactionCount] = useState(0);
     const [poolInvestPercentages, setPoolInvestPercentages]= useState({compound:0, aave:0, uniswap:0})
@@ -117,6 +117,15 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
         console.log(isPoolSelected);
     }
 
+    const _getTotalInput = () => {
+        const compoundAmt=Number(compoundInput.lend);
+        const aaveAmt=Number(aaveInput.lend);
+        const uniswapAmt = Number(uniswapInput.from);
+        const totalAmt=compoundAmt+aaveAmt+uniswapAmt;
+        return totalAmt;
+
+    }
+
     const initiateTransaction = async () => {
         setCompoundError(false);
         setAaveError(false);
@@ -136,8 +145,8 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
             // IF LEND AND BORROW 
             else if(compoundTransactSelected.lend===true  && compoundTransactSelected.borrow===true) {
                 poolAddressArray.push(poolAddresses['compound']);
-                const lendValue = Number(compoundInput.lend)*Math.pow(10,18);
-                const borrowValue = Number(compoundInput.borrow)*Math.pow(10,18);
+                const lendValue = Math.round(Number(compoundInput.lend)*Math.pow(10,18));
+                const borrowValue = Math.round(Number(compoundInput.borrow)*Math.pow(10,18));
                 if(lendValue===0)
                     return setCompoundError('Cannot borrow with zero lend amount'); 
                 if(borrowValue===0)
@@ -148,10 +157,10 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
             // IF ONLY LEND
             else if(compoundTransactSelected.lend===true && compoundTransactSelected.borrow===false) {
                 poolAddressArray.push(poolAddresses['compound']);
-                const lendValue = Number(compoundInput.lend)*Math.pow(10,18);
+                const lendValue = Math.round(Number(compoundInput.lend)*Math.pow(10,18));
                 if(lendValue===0)
                     return setCompoundError('Lend amount cannot be zero');
-                const funcHash = getDepositHashCompoundAave(web3, lendValue)*Math.pow(10,18);
+                const funcHash = getDepositHashCompoundAave(web3, lendValue);
                 functionHashArray.push(funcHash);
             }
         }
@@ -167,7 +176,7 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
             // IF LEND AND STREAM
             else if(aaveTransactSelected.lend===true && aaveTransactSelected.stream===true) {
                 poolAddressArray.push(poolAddresses['aave']);
-                const lendValue = Number(aaveInput.lend)*Math.pow(10,18);
+                const lendValue = Math.round(Number(aaveInput.lend)*Math.pow(10,18));
                 const streamAddress = aaveInput.stream;
                 if(lendValue===0) 
                     return setAaveError('Lend amount cannot be zero for Lend and Stream option' );
@@ -179,7 +188,7 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
             // IF ONLY LEND
             else if(aaveTransactSelected.lend===true && aaveTransactSelected.stream===false) {
                 poolAddressArray.push(poolAddresses['aave']);
-                const lendValue = Number(aaveInput.lend)*Math.pow(10,18);
+                const lendValue = Math.round(Number(aaveInput.lend)*Math.pow(10,18));
                 if(lendValue===0) 
                     return setAaveError('Cannot lend zero amount');
                 const funcHash=getDepositHashCompoundAave(web3, lendValue);
@@ -193,18 +202,34 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
             for(const token in toAmts) {
                 const swapAmt=Number(toAmts[token]);
                 if(swapAmt>0) {
-                    const funcHash = getUniswapSwapHash(web3, swapAmt*Math.pow(10,18), uniswapTokenAddresses[token] );
+                    const funcHash = getUniswapSwapHash(web3, Math.round(Math.round(swapAmt*Math.pow(10,18))), uniswapTokenAddresses[token] );
                     poolAddressArray.push(poolAddresses['uniswap']);
                     functionHashArray.push(funcHash);
                 }
             }
         }
 
-        await wallet.methods.execute([...poolAddressArray], [...functionHashArray]).send({ from: window.ethereum.selectedAddress, value: 2*Math.pow(10,17).toString() });
-        console.log('Pool Address');
-        console.log(poolAddressArray);
-        console.log('Function Hashes');
-        console.log(functionHashArray)
+        const totalEthInput = _getTotalInput();
+
+        const result = wallet.methods.execute([...poolAddressArray], [...functionHashArray]).send({ from: window.ethereum.selectedAddress, value: (totalEthInput*Math.pow(10,17)).toString() });
+        result.on("transactionHash", (hash) => {
+            alert("Transaction sent successfully! Waiting for confirmation....")
+            console.log("Transaction Hash is ", hash)   
+          }).once("confirmation", (confirmationNumber, receipt) => {
+            if (receipt.status) {
+              alert("Transaction processed successfully");
+            }
+            else {
+                alert("Transaction failed to process");
+            }
+            console.log(receipt)
+        })
+        
+        
+        // console.log('Pool Address');
+        // console.log(poolAddressArray);
+        // console.log('Function Hashes');
+        // console.log(functionHashArray)
         
     };
 
@@ -237,8 +262,11 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
                 </div>
                 { (isPoolSelected['compound'] || isPoolSelected['aave'] || isPoolSelected['uniswap']) &&
                     <div id="transact-info-div">
-                        <div><SavedTransactionsChart  savedTransactionCount={savedTransactionCount}/></div>
-                        <div><PoolPercentageChart poolInvestPercentages={poolInvestPercentages}/></div>
+                        <div id="saved-transact-div">
+                                <h3>Saved Transactions</h3>
+                                <p>{savedTransactionCount===-1 ? 0 : savedTransactionCount}</p>
+                        </div>
+                        <div id="pool-chart-div"><PoolPercentageChart poolInvestPercentages={poolInvestPercentages}/></div>
                     </div>
                 }
                 <div id="selected-pool-container">
