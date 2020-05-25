@@ -2,6 +2,7 @@ import React, { useState, Fragment } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import {initWeb3, initContract} from '../../../contractInterfaces/init';
 import { registry, initRegistry, checkRegistry } from '../../../contractInterfaces/registry';
+import {balanceAbi} from '../../../contractInterfaces/balance';
 import Modal from 'react-modal';
 import './NavBar.css';
 import brandLogo from '../../../icons/logo.png';
@@ -11,7 +12,7 @@ import transactionIcon from '../../../icons/transaction.svg'
 
 Modal.setAppElement('#root');
 
-function NavBar({setIsWalletConnected, isRegistered, setIsRegistered, setPersonalWalletAddress, registryContract, setRegistryContract}) {
+function NavBar({tokenAddresses, setAddress, setBalances, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract}) {
    const [showMetaMaskModal, setShowMetaMaskModal] = useState(false); 
    let [showPersonalWalletConnectModal, setShowPersonalWalletConnectModal] = useState(false);
 
@@ -26,12 +27,25 @@ function NavBar({setIsWalletConnected, isRegistered, setIsRegistered, setPersona
             if(personalWalletAdd==="0x0000000000000000000000000000000000000000") {
                 setShowPersonalWalletConnectModal(true);
                 setIsRegistered(false);
-                setPersonalWalletAddress(null);
+                setAddress(null);
             }
             else {
-                setPersonalWalletAddress(personalWalletAdd);
+                setAddress(personalWalletAdd);
+                const currentBalances = {'ETH':0, 'DAI':0, 'MKR':0, 'cETH':0, 'aETH':0};
+                const ETHbal = await web3Obj.eth.getBalance(personalWalletAdd);
+                currentBalances['ETH']=Math.round((Number(ETHbal)/(Math.pow(10,18)))*10000)/10000;
+                for(const token in currentBalances) {
+                    if(token!=='ETH') {
+                        const balanceContract = initContract(web3Obj, balanceAbi, tokenAddresses[token]);
+                        const result=await balanceContract.methods.balanceOf(personalWalletAdd).call();
+                        currentBalances[token]=Math.round((Number(result)/(Math.pow(10,18)))*10000)/10000;
+                    }
+                }
+                setBalances(currentBalances);
                 setIsRegistered(true);
-                console.log(personalWalletAdd);
+                console.log('PWA: '+personalWalletAdd);
+                console.log(currentBalances);
+
             }   
         },1000);
     }
@@ -42,11 +56,11 @@ function NavBar({setIsWalletConnected, isRegistered, setIsRegistered, setPersona
         console.log(personalWalletAdd);
         if(personalWalletAdd==="0x0000000000000000000000000000000000000000" || !personalWalletAdd) {
             setIsRegistered(false);
-            setPersonalWalletAddress(null);
+            setAddress(null);
         }
         else {
             setIsRegistered(true);
-            setPersonalWalletAddress(personalWalletAdd);
+            setAddress(personalWalletAdd);
         }
         console.log(personalWalletAdd);
     }
@@ -68,14 +82,14 @@ function NavBar({setIsWalletConnected, isRegistered, setIsRegistered, setPersona
                         <img src={brandLogo} alt="parcel-logo"/>
                     </Link>
                     <nav>
-                            <Link className="nav-link" to="/swap"> 
+                            <Link className="nav-link" to="/parcel"> 
                                 <img src={swapIcon} alt="swap-icon"/>
-                                <span>Swap</span>
+                                <span>Parcel</span>
                             </Link>
                         
-                            <Link className="nav-link" to="/transact">
+                            <Link className="nav-link" to="/defi">
                                 <img src={transactionIcon} alt="transactionIcon" />
-                                <span>Transact</span>
+                                <span>DeFi Protocols</span>
                                 
                             </Link>
                            

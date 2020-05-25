@@ -6,7 +6,7 @@ function Footer({style}) {
     return <div style={style} id="footer-div">
                 <span>Copyrights</span>
                 <img id="copyright-logo" src={copyrightLogo} alt="copyright-logo" />
-                <span>2019 Parcel</span>
+                <span>2020 Parcel</span>
             </div>
 }
 

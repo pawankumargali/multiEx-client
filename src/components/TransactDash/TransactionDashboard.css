@@ -43,7 +43,7 @@
 #selected-pool-container {
     display:flex;
     justify-content: space-evenly;
-    align-items: center;
+    align-items: flex-start;
     background-color: #fff;
     /* padding:0px 64px; */
     
@@ -75,4 +75,11 @@
     margin-right: 20px;
     outline: none;
     font-size:20px;
+}
+
+#transact-info-div {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin:10px auto;
 }

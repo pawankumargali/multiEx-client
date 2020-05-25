@@ -1,12 +1,13 @@
 import React, { Fragment } from 'react';
 import NavBar from '../core/Navbar/NavBar';
+import { Link } from 'react-router-dom';
 import ServiceInfo from  '../ServiceInfo/ServiceInfo';
 import Footer from '../core/Footer/Footer';
 import './Home.css';
 // import { registry } from '../../contractInterfaces/registry';
 // import UserInfo from '../core/UserInfo/UserInfo';
 
-function Home({web3, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
+function Home({web3, tokenAddresses, setAddress, setBalances, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
 
     return <Fragment>
                 <NavBar isWalletConnected={isWalletConnected}
@@ -17,6 +18,9 @@ function Home({web3, isWalletConnected, setIsWalletConnected, isRegistered, setI
                         registryContract={registryContract}
                         setRegistryContract={setRegistryContract}
                         setPersonalWalletAddress={setPersonalWalletAddress}
+                        setAddress={setAddress}
+                        setBalances={setBalances}
+                        tokenAddresses={tokenAddresses}
 
                 />
                 {/* {address && <UserInfo address={address}
@@ -29,21 +33,31 @@ function Home({web3, isWalletConnected, setIsWalletConnected, isRegistered, setI
                         Borrow simultaneously from popular DeFi portals. All in one Transaction. Reduce
                         the number of transactions involved and save Eth on gas.
                     </div>
+                    <div id="tail">
+                    <Link to='/parcel'>
+                        <button style={{backgroundColor:'#03265b'}}>Go To App</button>
+                    </Link>
+                    </div>
                 </section> 
+                
                 <section id="steps-container"> 
                     <ServiceInfo 
-                        serviceIconName={'swap'}
-                        serviceName={'Swap Tokens'}
-                        serviceDesc={'Choose from list of supported tokens, select quantities and swap at once'}
+                        serviceIconName={'compound'}
+                        serviceName={'Lend/Borrow'}
+                        serviceDesc={'Lend ETH and Borrow DAI.'}
                         bgColor='#03265b'
-                        btnColor="#3fbda6"
                     />
                     <ServiceInfo 
-                        serviceIconName={'transact'}
-                        serviceName={'Lend/Borrow from DeFi portals'}
-                        serviceDesc={'Choose from list of DeFi portal, select lend or/and borrow transactions, enter quantities and transact at once'}
+                        serviceIconName={'aave'}
+                        serviceName={'Lend/Stream'}
+                        serviceDesc={'Lend ETH and stream interest to any address.'}
                         bgColor='#3fbda6'
-                        btnColor="#03265b"
+                    />
+                    <ServiceInfo 
+                        serviceIconName={'uniswap'}
+                        serviceName={'Swap Tokens'}
+                        serviceDesc={'Choose from list of supported tokens, select quantities and swap ETH.'}
+                        bgColor='#03265b'
                     />
                 </section> 
                 <Footer /> 

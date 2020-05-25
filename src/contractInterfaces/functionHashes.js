@@ -42,7 +42,7 @@ function getDepositAndStreamAaveHash(web3, lendValue, streamAddress) {
     return hash;
 }
 
-function getUniswapSwapHash(web3,swapValue, toTokenAddress) {
+function getUniswapSwapHash(web3, swapValue, toTokenAddress) {
     const hash = web3.eth.abi.encodeFunctionCall({
       name: 'swap',
       type: 'function',
@@ -57,5 +57,25 @@ function getUniswapSwapHash(web3,swapValue, toTokenAddress) {
     return hash;
 
 }
-export { getDepositHashCompoundAave, getDepositAndBorrowCompoundHash, getDepositAndStreamAaveHash, getUniswapSwapHash}
+
+
+function getMultisenderHash(web3, tokenAddressArray, receiverAddressArray, tokenAmtArray) {
+  const hash = web3.eth.abi.encodeFunctionCall({
+    name: 'multiToken',
+    type: 'function',
+    inputs: [{
+      type: 'address[]',
+      name: 'targets'
+    }, {
+      type: 'address[]',
+      name: 'addresses'
+    },
+    {
+      type: 'uint256[]',
+      name: 'values'
+    }]
+  }, [[...tokenAddressArray], [...receiverAddressArray], [...tokenAmtArray]]);
+  return hash;
+}
+export { getDepositHashCompoundAave, getDepositAndBorrowCompoundHash, getDepositAndStreamAaveHash, getUniswapSwapHash, getMultisenderHash}
 

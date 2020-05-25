@@ -1,6 +1,7 @@
 const uniswap={};
 uniswap.contract={
-    address:'0xCC2f880f977d96b7DE75aD64Fc25696cC5b549d0',
+    
+    address:'0xdf5C7B397B1132f4dDBf3CC232191fA40489Fc98',
     abi:[
         {
             "constant": false,

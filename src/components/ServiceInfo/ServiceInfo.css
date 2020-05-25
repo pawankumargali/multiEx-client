@@ -4,7 +4,7 @@
     text-align:center;
 }
 
-.steps-icon img { width:64px; }
+.steps-icon img { width:200px; }
 
 .steps-title {
     font-size:24px;
@@ -12,6 +12,14 @@
     margin-top:24px;
     margin-bottom:24px;
     color:#F6F9FC;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.steps-title img {
+    width:24px;
+    margin-right:10px;
 }
 
 .steps-description {
