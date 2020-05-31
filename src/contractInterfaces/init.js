@@ -17,21 +17,9 @@ async function initWeb3() {
     }
 } 
 
-async function initUser(web3Obj) {
-  const add = window.ethereum.selectedAddress;
-  try {
-      const bal = await web3Obj.eth.getBalance(add);
-      return [add, bal];
-  }
-  catch(err) {
-    console.log(err);
-  }
-
-}
-
 function initContract(web3Obj , contractAbi, contractAddress) {
   const contract = new web3Obj.eth.Contract(contractAbi, contractAddress);
   return contract;
 }
 
-export { initWeb3, initUser, initContract };
+export { initWeb3, initContract };

@@ -53,6 +53,7 @@ function AaveDash({transactSelected, setTransactSelected, fields, setFields, err
                         />
                         {transactSelected.stream && 
                             <input type="text"
+                                style={{fontSize:'16px'}}
                                 className="lend-borrow-amt-input"
                                 onChange={handleFieldChange}
                                 value={fields.stream}

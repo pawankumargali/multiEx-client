@@ -44,13 +44,11 @@ registry.contract = {
   // Check if the user if already registered and fetch the registered address
   async function checkRegistry(registryContract) {
     const walletAddress = await registryContract.methods.registered(window.ethereum.selectedAddress).call({ from: window.ethereum.selectedAddress });
-    console.log(walletAddress)
     return walletAddress;
   }
 
   async function register(registryContract) {
-    const check = await registryContract.methods.register().send({ from: window.ethereum.selectedAddress });
-    console.log(check);
+    await registryContract.methods.register().send({ from: window.ethereum.selectedAddress });
   }
 
   const initRegistry = async (registryContract) => {

@@ -44,7 +44,7 @@ function UniswapDash({selectedTokens, setSelectedTokens, amounts, setAmounts, er
         const currentSelection = {...selectedTokens};
         currentSelection[token] = !currentSelection[token];
         setSelectedTokens(currentSelection);
-        console.log(selectedTokens);
+        // console.log(selectedTokens);
     };
 
     const handleAmtsChange = async (e,token) => {
@@ -78,7 +78,7 @@ function UniswapDash({selectedTokens, setSelectedTokens, amounts, setAmounts, er
         }
     }
 
-    const handleToPercentChange = (e, token) => {
+    const handleToPercentChange = async (e, token) => {
         const percentage=Math.round(Number(e.target.value)*100)/100;
         const currentToPercents = {...toPercent};
         currentToPercents[token]=percentage;
@@ -87,9 +87,16 @@ function UniswapDash({selectedTokens, setSelectedTokens, amounts, setAmounts, er
         const toAmt = (Number(currentAmts.from)*percentage)/100;
         currentAmts.to[token]=Math.round(toAmt*100000000)/1000000000;
         setAmounts(currentAmts);
-        console.log(token);
-        console.log(toPercent);
-        console.log(amounts);
+        // console.log(token);
+        // console.log(toPercent);
+        // console.log(amounts);
+        const tokensforEth = {...tokensPerEth};
+        const web3 = await initWeb3();
+        const uniswapContract = initContract(web3, uniswap.contract.abi, uniswap.contract.address);
+        const tokenExValue = await uniswapContract.methods.getAmount(["0xd0A1E359811322d97991E03f863a0C30C2cF029C", tokenAddObj[token] ], (1*Math.pow(10,18)).toString()).call();
+        const divFactor = token==='USDC' ? Math.pow(10,6) : Math.pow(10,18);
+        tokensforEth[token] = Number(tokenExValue[1])/divFactor;
+        setTokensPerEth(tokensforEth);
         const totaltoAmt=_getTotalToAmts(amounts);
         setTotalToAmt(totaltoAmt);
         if(totaltoAmt>Number(amounts.from)) {

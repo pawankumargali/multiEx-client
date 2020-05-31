@@ -7,8 +7,8 @@ function UserInfo({address, balances}) {
     return <div id="user-container">
                 <div id="wallet-div">
                     <h3 className="title">Wallet</h3>
-                    <p class="content">{address ? address: <span style={{color:'red'}}>Wallet not connected</span>}</p>
-                    <p class="content">{address ? (Math.round(balances['ETH']*10000)/10000)+'ETH' : ""}</p>
+                    <p className="content">{address ? address: <span style={{color:'red'}}>Wallet not connected</span>}</p>
+                    <p className="content">{address ? (Math.round(balances['ETH']*10000)/10000)+'ETH' : ""}</p>
                 </div>
                 <div id="token-balances-container">
                     <div id="balances-div">

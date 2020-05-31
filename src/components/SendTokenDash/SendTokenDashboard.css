@@ -14,26 +14,18 @@
     font-weight: 550;
 }
 
-#info-container-div {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height:300px;
-    margin:0;
-    padding:0;
-}
-
 
 .info-item-div {
     text-align: center;
-    /* margin-top:20px; */
-    text-align: center;
-    background-color: #fff; 
-    min-width: 300px;
+    background-color: #fff;
+    margin:24px auto;
+    padding:8px 24px; 
+    width:400px;
+    /* min-width: 300px; */
     min-height:150px;
-    width:auto;
+    /* width:auto; */
     height:auto;    
-    padding:0px 25px;
+    /* padding:0px 25px; */
     border-radius:10px;
 }
 
@@ -178,8 +170,3 @@
     color:#fff;
     background-color: #404448;
 } 
-
-/* #chart-div {
-    width:30%;
-} */
-

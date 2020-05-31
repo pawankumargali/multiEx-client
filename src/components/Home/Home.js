@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import ServiceInfo from  '../ServiceInfo/ServiceInfo';
 import Footer from '../core/Footer/Footer';
 import './Home.css';
-// import { registry } from '../../contractInterfaces/registry';
-// import UserInfo from '../core/UserInfo/UserInfo';
 
 function Home({web3, tokenAddresses, setAddress, setBalances, setMetamaskAdd, setMetamaskBal, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract, setPersonalWalletAddress}) {
 
@@ -25,14 +23,11 @@ function Home({web3, tokenAddresses, setAddress, setBalances, setMetamaskAdd, se
                         setMetamaskBal={setMetamaskBal}
 
                 />
-                {/* {address && <UserInfo address={address}
-                          balance={balance}
-                />} */}
                 <section id="landing">
                     <div id="title">Parcel multiple transactions into one. Save on Gas</div>
                     <div id="description">
-                        Select and swap multiple tokens with Ethereum. Invest in and
-                        Borrow simultaneously from popular DeFi portals. All in one Transaction. Reduce
+                        Send multiple tokens to multiple addresses. Invest in and
+                        Borrow from and swap Ether simultaneously from popular DeFi portals. All in one Transaction. Reduce
                         the number of transactions involved and save Eth on gas.
                     </div>
                     <div id="tail">

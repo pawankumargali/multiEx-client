@@ -6,13 +6,16 @@ import { userWallet } from '../../contractInterfaces/userWallet';
 import CompoundDash from '../CompoundDash';
 import AaveDash from  '../AaveDash';
 import UniswapDash from '../UniswapDash/UniswapDash';
+import { toast } from 'react-toastify';
+import {TxInitiatedToast, TxSentToast, TxSuccessToast, TxFailedToast} from '../core/CustomToasts/CustomToasts';
+import 'react-toastify/dist/ReactToastify.css';
 import './TransactionDashboard.css';
 import compoundIcon from '../../icons/pools/compound.png';
 import aaveIcon from '../../icons/pools/aave.png';
 import uniswapIcon from '../../icons/pools/uniswap.png';
-import {getDepositHashCompoundAave, getDepositAndBorrowCompoundHash, getDepositAndStreamAaveHash, getUniswapSwapHash, getMultisenderHash} from '../../contractInterfaces/functionHashes';
+import {getDepositHashCompoundAave, getDepositAndBorrowCompoundHash, getDepositAndStreamAaveHash, getUniswapSwapHash } from '../../contractInterfaces/functionHashes';
 import PoolPercentageChart from '../PoolPercentageChart';
-import SavedTransactionsChart from '../SavedTransactionsChart';
+
 
 function TransactionDashboard({web3, tokenAddresses, address, setAddress, balances, setBalances, setMetamaskAdd, setMetamaskBal, isWalletConnected, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract }) {
 
@@ -47,7 +50,7 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
         else if(compoundInput.lend!==0 && compoundInput.borrow===0) compoundCount+=1;
         let aaveCount=0;
         if(aaveInput.lend!==0 && aaveInput.stream!=="") aaveCount+=2;
-        else if(aaveInput.lend!==0 && aaveInput.stream=="") aaveCount+=1;
+        else if(aaveInput.lend!==0 && aaveInput.stream==="") aaveCount+=1;
         let uniswapCount=0;
         const uniswapAmts=uniswapInput.to;
         for(const token in uniswapAmts) {
@@ -74,7 +77,6 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
         const transCount = updateTransactionCount();
         setSavedTransactionCount(transCount-1);
         updatePoolInvestPercentages();
-        console.log(poolInvestPercentages);
     }, [compoundInput, aaveInput, uniswapInput, savedTransactionCount]);
 
     const updateSelectedPools = pool => {
@@ -113,8 +115,6 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
                 setUniswapInput(uniswapInp);
             }
         }
-        console.log(selectedPools);
-        console.log(isPoolSelected);
     }
 
     const _getTotalInput = () => {
@@ -166,11 +166,9 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
         }
 
         // IF AAVE SELECTED
-        console.log(isPoolSelected);
         if(isPoolSelected.aave) {
             // IF ONLY STREAM
             if(aaveTransactSelected.lend===false && aaveTransactSelected.stream===true) {
-                console.log('here');
                 return setAaveError('Need to lend amount, to be able to stream interest to an address');
             }
             // IF LEND AND STREAM
@@ -212,25 +210,20 @@ function TransactionDashboard({web3, tokenAddresses, address, setAddress, balanc
         const totalEthInput = _getTotalInput();
 
         const result = wallet.methods.execute([...poolAddressArray], [...functionHashArray]).send({ from: window.ethereum.selectedAddress, value: (totalEthInput*Math.pow(10,17)).toString() });
+        
+        toast(<TxInitiatedToast />);
+        let txHash;
         result.on("transactionHash", (hash) => {
-            alert("Transaction sent successfully! Waiting for confirmation....")
-            console.log("Transaction Hash is ", hash)   
-          }).once("confirmation", (confirmationNumber, receipt) => {
+            txHash=hash;
+            toast(<TxSentToast txHash={txHash} />)
+        }).once("confirmation", (confirmationNumber, receipt) => {
             if (receipt.status) {
-              alert("Transaction processed successfully");
+                toast(<TxSuccessToast txHash={txHash}/>);
+            } else {
+                toast(<TxFailedToast txHash={txHash}/>);
             }
-            else {
-                alert("Transaction failed to process");
-            }
-            console.log(receipt)
-        })
-        
-        
-        // console.log('Pool Address');
-        // console.log(poolAddressArray);
-        // console.log('Function Hashes');
-        // console.log(functionHashArray)
-        
+            // console.log(receipt);
+        });
     };
 
 

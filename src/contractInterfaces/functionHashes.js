@@ -7,7 +7,7 @@ function getDepositHashCompoundAave(web3, lendValue) {
             "name": "msgValue"
           }]
     },[lendValue.toString()]);
-    console.log(depositHash);
+    // console.log(depositHash);
     return depositHash;
 }
 
@@ -23,7 +23,7 @@ function getDepositAndBorrowCompoundHash(web3, lendValue, borrowValue) {
             "name": "daiValue"
           }]
     },[lendValue.toString(), borrowValue.toString()]);
-    console.log(depositandBorrowHash);
+    // console.log(depositandBorrowHash);
     return depositandBorrowHash;
 }
 

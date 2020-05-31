@@ -1,0 +1,43 @@
+.Toastify__toast  {
+    padding:0;
+}
+
+.toast-div {
+    width:auto;
+    height:auto;
+    font-family: Roboto;
+}
+
+.toast-title {
+    font-weight: lighter;
+    font-size:16px;
+    color:#03265B;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.toast-title img {
+    width:40px;
+    margin:0px 10px;
+}
+.tx-id-para {
+    font-weight: 800;
+    width:auto;
+    color:#03265B;
+    font-size:14px;
+}
+
+.tx-id-para span {color:#3FBDA6;}
+
+.tx-link-para { text-align: center;}
+
+.tx-link-para a {
+    text-decoration:none;
+    color:#3FBDA6;
+    cursor: pointer;
+    font-size: 16px;
+    margin:0;
+    padding:0;
+    border-radius:5px;
+}

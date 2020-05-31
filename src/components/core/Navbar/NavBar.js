@@ -6,57 +6,64 @@ import {balanceAbi} from '../../../contractInterfaces/balance';
 import Modal from 'react-modal';
 import './NavBar.css';
 import brandLogo from '../../../icons/logo.png';
-import metamaskIcon from '../../../icons/metamask.svg'
 import swapIcon from '../../../icons/swap.svg'
 import transactionIcon from '../../../icons/transaction.svg'
 
 Modal.setAppElement('#root');
 
 function NavBar({tokenAddresses, setAddress, setBalances, setMetamaskAdd, setMetamaskBal, setIsWalletConnected, isRegistered, setIsRegistered, registryContract, setRegistryContract}) {
-   const [showMetaMaskModal, setShowMetaMaskModal] = useState(false); 
    let [showPersonalWalletConnectModal, setShowPersonalWalletConnectModal] = useState(false);
 
-    const connectMetaMaskWallet = async () => {
-        setShowMetaMaskModal(false);
-        setIsWalletConnected(true);
-        const web3Obj = await initWeb3();
-        setTimeout(async () => {
-            const add = window.ethereum.selectedAddress;
-            const bal = await web3Obj.eth.getBalance(add)/Math.pow(10,18);
-            setMetamaskAdd(add);
-            setMetamaskBal(bal);
-            const registryContractObj = initContract(web3Obj, registry.contract.abi, registry.contract.address);
-            setRegistryContract(registryContractObj);
-            const personalWalletAdd = await checkRegistry(registryContractObj);
-            if(personalWalletAdd==="0x0000000000000000000000000000000000000000") {
-                setShowPersonalWalletConnectModal(true);
-                setIsRegistered(false);
-                setAddress(null);
-            }
-            else {
-                setAddress(personalWalletAdd);
-                const currentBalances = {'ETH':0, 'DAI':0, 'MKR':0, 'cETH':0, 'aETH':0};
-                const ETHbal = await web3Obj.eth.getBalance(personalWalletAdd);
-                currentBalances['ETH']=Math.round((Number(ETHbal)/(Math.pow(10,18)))*10000)/10000;
-                for(const token in currentBalances) {
-                    if(token!=='ETH') {
-                        const balanceContract = initContract(web3Obj, balanceAbi, tokenAddresses[token]);
-                        const result=await balanceContract.methods.balanceOf(personalWalletAdd).call();
-                        currentBalances[token]=Math.round((Number(result)/(Math.pow(10,18)))*10000)/10000;
+    const initiateConnect = async () => {   
+        try {
+            const web3Obj = await initWeb3();
+            if(web3Obj) {
+                setTimeout(async () => {
+                    const add = window.ethereum.selectedAddress;
+                    const bal = await web3Obj.eth.getBalance(add)/Math.pow(10,18);
+                    setMetamaskAdd(add);
+                    setMetamaskBal(bal);
+                    const registryContractObj = initContract(web3Obj, registry.contract.abi, registry.contract.address);
+                    setRegistryContract(registryContractObj);
+                    const personalWalletAdd = await checkRegistry(registryContractObj);
+                    if(personalWalletAdd==="0x0000000000000000000000000000000000000000") {
+                        setShowPersonalWalletConnectModal(true);
+                        setIsRegistered(false);
+                        setAddress(null);
                     }
-                }
-                setBalances(currentBalances);
-                setIsRegistered(true);
-                console.log('PWA: '+personalWalletAdd);
-                console.log(currentBalances);
-            }   
-        },1000);
+                    else {
+                        setAddress(personalWalletAdd);
+                        const currentBalances = {'ETH':0, 'DAI':0, 'MKR':0, 'cETH':0, 'aETH':0};
+                        const ETHbal = await web3Obj.eth.getBalance(personalWalletAdd);
+                        currentBalances['ETH']=Math.round((Number(ETHbal)/(Math.pow(10,18)))*10000)/10000;
+                        for(const token in currentBalances) {
+                            if(token!=='ETH') {
+                                const balanceContract = initContract(web3Obj, balanceAbi, tokenAddresses[token]);
+                                const result=await balanceContract.methods.balanceOf(personalWalletAdd).call();
+                                currentBalances[token]=Math.round((Number(result)/(Math.pow(10,18)))*10000)/10000;
+                            }
+                        }
+                        setBalances(currentBalances);
+                        setIsRegistered(true);
+                    }   
+                },1000);
+            }
+        }
+        catch(err) {
+            console.log(err);
+            setIsWalletConnected(false);
+            setMetamaskAdd("");
+            setMetamaskBal(0);
+            setRegistryContract(null);
+            setAddress("");
+            setBalances({'ETH':0, 'DAI':0, 'MKR':0, 'cETH':0, 'aETH':0});
+            setIsRegistered(false);
+        }
     }
 
     const createPersonalWallet = async () => {
         setShowPersonalWalletConnectModal(false);
         const personalWalletAdd = await initRegistry(registryContract);
-        console.log(personalWalletAdd);
         if(personalWalletAdd==="0x0000000000000000000000000000000000000000" || !personalWalletAdd) {
             setIsRegistered(false);
             setAddress(null);
@@ -65,7 +72,6 @@ function NavBar({tokenAddresses, setAddress, setBalances, setMetamaskAdd, setMet
             setIsRegistered(true);
             setAddress(personalWalletAdd);
         }
-        console.log(personalWalletAdd);
     }
 
    const modalStyles = {
@@ -97,34 +103,12 @@ function NavBar({tokenAddresses, setAddress, setBalances, setMetamaskAdd, setMet
                             </Link>
                            
                             {isRegistered ? 
-                                <button>Wallet Connected</button> :
-                                <button onClick={() => setShowMetaMaskModal(true)}>Connect</button>
+                                <button>Connected</button> :
+                                <button onClick={initiateConnect}>Connect</button>
                             }
-                            {/* {isRegistered &&
-                                <button>Wallet Connected</button>
-                            } */}
-                            {/* {isWalletConnected ?
-                                <button>Metamask Connected</button> :
-                                <button onClick={() => setShowMetaMaskModal(true)}>Connect Metamask</button>
-                            } */}
                             
                     </nav>
                 </header>
-                <Modal 
-                    isOpen={showMetaMaskModal}
-                    onRequestClose={() => setShowMetaMaskModal(false)}
-                    style={modalStyles}
-                >
-                    <h1 id="modal-title">Connect Ethereum Wallet</h1>
-                    <div id="modal-body">
-                        <img src={metamaskIcon} alt="metamask" />
-                        <div>
-                            <h3>Metamask</h3>
-                            Self custodial browser extension based wallet
-                        </div>
-                            <button onClick={connectMetaMaskWallet}>Connect using Metamask</button>
-                    </div>                 
-                </Modal>
                 <Modal
                     isOpen={showPersonalWalletConnectModal}
                     onRequestClose={() => setShowPersonalWalletConnectModal(false)}
